@@ -1,0 +1,15 @@
+{
+    "id": "R001",
+    "title": "Water Quality and Biodegradation",
+    "category": "water-research",
+    "status": "draft",
+    "question": "What measurable changes occur in water quality during biodegradation?",
+    "methodology": "Not yet established",
+    "article": "../articles/R001.md",
+    "dataset": "../datasets/R001.csv",
+    "sources": "../sources/R001.json",
+    "license": "undetermined",
+    "findings": [],
+    "limitations": [],
+    "last_updated": "2026-09-30"
+}
