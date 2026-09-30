@@ -1,55 +1,42 @@
-#!/bin/bash
+#!/usr/bin/env bash
+set -euo pipefail
 
-# Permanently disable mint and freeze authorities.
-# This should only be used after the final token supply has been minted.
+# Tardonaut (TDNT)
+# Read-only authority verification.
 
-set -e
+MINT="FGzxGmzsEsYV7D9RoFCQqrJ8fMcyEspcbgT7B1niTmsM"
 
-CONFIG="config/token.json"
+echo "TARDONAUT — AUTHORITY VERIFICATION"
 
-if [ ! -f "$CONFIG" ]; then
-    echo "Missing $CONFIG"
+RPC=$(solana config get |
+    awk '/^RPC URL:/ {print $3}' |
+    tr -d '\r')
+
+if [[ "$RPC" != "https://api.devnet.solana.com" ]]; then
+    echo "ERROR: Devnet required."
     exit 1
 fi
 
-MINT_ADDRESS=$(grep '"mint_address"' "$CONFIG" | cut -d '"' -f 4)
+INFO=$(spl-token --program-2022 display "$MINT")
 
-if [ -z "$MINT_ADDRESS" ]; then
-    echo "mint_address is empty in $CONFIG"
+echo "$INFO"
+
+if ! grep -Eq \
+    '^[[:space:]]*Mint authority:[[:space:]]*\(not set\)$' \
+    <<< "$INFO"; then
+    echo "ERROR: Mint authority is active."
     exit 1
 fi
 
-echo "Token mint:"
-echo "$MINT_ADDRESS"
-
-echo
-echo "WARNING:"
-echo "This operation permanently disables the authorities."
-echo "Minting additional tokens will no longer be possible."
-echo "Freezing token accounts will no longer be possible."
-
-echo
-read -r -p "Type REVOKE to continue: " CONFIRM
-
-if [ "$CONFIRM" != "REVOKE" ]; then
-    echo "Operation cancelled."
-    exit 0
+if ! grep -Eq \
+    '^[[:space:]]*Freeze authority:[[:space:]]*\(not set\)$' \
+    <<< "$INFO"; then
+    echo "ERROR: Freeze authority is active."
+    exit 1
 fi
 
 echo
-echo "Disabling mint authority..."
-
-spl-token authorize "$MINT_ADDRESS" mint --disable
-
-echo
-echo "Disabling freeze authority..."
-
-spl-token authorize "$MINT_ADDRESS" freeze --disable
-
-echo
-echo "Authorities revoked."
-
-echo
-echo "Final mint information:"
-
-spl-token display "$MINT_ADDRESS"
+echo "VERIFICATION SUCCESSFUL"
+echo "Mint authority: Revoked"
+echo "Freeze authority: Not set"
+echo "Metadata authority: Unchanged"

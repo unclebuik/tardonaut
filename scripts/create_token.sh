@@ -1,34 +1,17 @@
-#!/bin/bash
+#!/usr/bin/env bash
 set -euo pipefail
 
 # Tardonaut (TDNT)
-# Development network: Solana Devnet
+# Devnet mint creation completed.
+# This script is intentionally disabled.
 
-echo "TARDONAUT — TOKEN CREATION"
+MINT="FGzxGmzsEsYV7D9RoFCQqrJ8fMcyEspcbgT7B1niTmsM"
 
-# Require Devnet.
-RPC=$(solana config get | grep "RPC URL:")
-
-if [[ "$RPC" != *"https://api.devnet.solana.com"* ]]; then
-    echo "ERROR: Solana Devnet is required."
-    exit 1
-fi
-
-# Check wallet.
+echo "TARDONAUT — EXISTING MINT"
+echo "Mint: $MINT"
 echo
-echo "Wallet:"
-solana address
+echo "Token creation is disabled."
+echo "TDNT has already been deployed on Devnet."
+echo "No additional mint will be created."
 
-echo
-echo "Balance:"
-solana balance
-
-# Create Token-2022 mint with metadata extension.
-echo
-echo "Creating Tardonaut Token-2022 mint..."
-
-spl-token --program-id \
-    TokenzQdBNbLqP5VEhdkAS6EPFjGz3oTgkYy5v4qLq3 \
-    create-token \
-    --decimals 6 \
-    --enable-metadata
+exit 0
